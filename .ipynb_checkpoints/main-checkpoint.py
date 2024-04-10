@@ -10,7 +10,7 @@ class PlotDrawer:
         df = pd.read_json(json_file)
         labelencoder = LabelEncoder()
         df['gt_corners'] = labelencoder.fit_transform(df['gt_corners'] )
-        df['rb_corners'] = labelencoder.fit_transform(df[	'rb_corners'])
+        df['rb_corners'] = labelencoder.fit_transform(df['rb_corners'])
         y_test = df['gt_corners']
         y_pred = df['rb_corners']
         
@@ -24,39 +24,23 @@ class PlotDrawer:
         plt.savefig(plot_path)
         plt.close()
         cm = confusion_matrix(y_test, y_pred)
-        
+    
         # Вычисление отчета о классификации
         cr = classification_report(y_test, y_pred, output_dict=True)
         cr_df = pd.DataFrame(cr).transpose()
         
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
-        accuracy = cr_df.loc['accuracy', 'precision']
-        # Отображение точности
-        sns.barplot(x=cr_df.index, y=cr_df['precision'], color='blue', alpha=0.5, ax=axes[0])
-        axes[0].set_title('Precision')
-        axes[0].set_xlabel('Class')
-        axes[0].set_ylabel('Score')
-
-        # Отображение полноты
-        sns.barplot(x=cr_df.index, y=cr_df['recall'], color='green', alpha=0.5, ax=axes[1])
-        axes[1].set_title('Recall')
-        axes[1].set_xlabel('Class')
-        axes[1].set_ylabel('Score')
-
-        # Отображение F1-меры и добавление линии для точности
-        sns.barplot(x=cr_df.index, y=cr_df['f1-score'], color='red', alpha=0.5, ax=axes[2])
-        axes[2].set_title('F1-score')
-        axes[2].set_xlabel('Class')
-        axes[2].set_ylabel('Score')
-
-        # Регулирование расстояния между графиками
-        plt.tight_layout()
-        # Сохранение графика
-        plot_path = os.path.join('plots', 'plot_classification_report.png')
+        # Построение графика для точности, полноты и F1-меры
+        fig = plt.figure(figsize=(12, 6))
+        sns.barplot(x=cr_df.index, y=cr_df['precision'], color='blue', alpha=0.5, label='Precision')
+        sns.barplot(x=cr_df.index, y=cr_df['recall'], color='green', alpha=0.5, label='Recall')
+        sns.barplot(x=cr_df.index, y=cr_df['f1-score'], color='red', alpha=0.5, label='F1-score')
+        plt.title('Classification Metrics')
+        plt.xlabel('Class')
+        plt.ylabel('Score')
+        plt.legend()
+        plot_path = os.path.join('plots', 'plot_Classification_Metrics.png')
         plt.savefig(plot_path)
         plt.close()
-        # Отображение графика
-        
         
         # Создание тепловой карты для матрицы ошибок
         fig = plt.figure(figsize=(8, 6))
@@ -70,5 +54,5 @@ class PlotDrawer:
         plt.close()
 
         
-        
         return plot_path
+        
